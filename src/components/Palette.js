@@ -7,9 +7,6 @@ const Palette = ({ onPaletteSelection }) => {
         const updatedBoxes = [...selectedBoxes];
         updatedBoxes[colIndex] = rowIndex;
         setSelectedBoxes(updatedBoxes);
-
-        // const code = selectedBoxes.map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x")).join("");
-        // onPaletteSelection(code);
     };
 
     useEffect(() => {
@@ -31,6 +28,7 @@ const Palette = ({ onPaletteSelection }) => {
                                 fontSize: "18px",
                                 lineHeight: "40px",
                                 marginRight: "5px",
+                                marginBottom: "5px",
                                 background:
                                     rowIndex === 0 ? "green" : rowIndex === 1 ? "yellow" : "white",
                                 opacity: selectedBoxes[colIndex] === rowIndex ? 1 : 0.5,
@@ -40,10 +38,6 @@ const Palette = ({ onPaletteSelection }) => {
                     ))}
                 </div>
             ))}
-            <p>
-                Selected code:{" "}
-                {selectedBoxes.map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x")).join("")}
-            </p>
         </div>
     );
 };

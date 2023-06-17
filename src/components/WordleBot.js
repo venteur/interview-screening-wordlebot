@@ -3,6 +3,7 @@ import { Card, CardContent, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import { fetchWordleResult } from "../api/api";
 import Palette from "./Palette";
+import BoxDisplay from "./BoxDisplay";
 import "./WordleBot.css";
 
 const WordleBot = () => {
@@ -12,9 +13,9 @@ const WordleBot = () => {
     const [apiResult, setApiResult] = useState({ guess: "SERAI" });
     const [cardData, setCardData] = useState([]);
 
-    const clueInputHandler = (event) => {
-        setClueCode(event.target.value);
-    };
+    // const clueInputHandler = (event) => {
+    //     setClueCode(event.target.value);
+    // };
 
     const cardDataHandler = () => {
         console.log(clueCode, "hi");
@@ -65,12 +66,13 @@ const WordleBot = () => {
                         </Typography>
                         <Typography variant="h6" gutterBottom>
                             Word to Guess:
-                            <input type="text" value={card.guess} readOnly />
+                            <BoxDisplay word={card.guess} />
                         </Typography>
                         <Typography variant="h6" gutterBottom>
                             What response did you get back?
                         </Typography>
-                        <input type="text" value={card.clue} readOnly />
+                        {/* <input type="text" value={card.clue} readOnly /> */}
+                        <BoxDisplay backgroundColor={card.clue} word={card.guess} />
                     </CardContent>
                 </Card>
             ))}
@@ -82,12 +84,17 @@ const WordleBot = () => {
                     </Typography>
                     <Typography variant="h6" gutterBottom>
                         Word to Guess:
-                        <input type="text" value={apiResult.guess.toLocaleUpperCase()} readOnly />
+                        {/* <input type="text" value={apiResult.guess.toLocaleUpperCase()} readOnly /> */}
+                        <BoxDisplay word={apiResult.guess.toLocaleUpperCase()} />
                     </Typography>
                     <Typography variant="h6" gutterBottom>
                         What response did you get back?
                     </Typography>
-                    <input type="text" value={clueCode} onChange={clueInputHandler} />
+                    {/* <input type="text" value={clueCode} onChange={clueInputHandler} /> */}
+                    <BoxDisplay
+                        backgroundColor={clueCode}
+                        word={apiResult.guess.toLocaleUpperCase()}
+                    />
                     <Palette onPaletteSelection={handlePaletteSelection} />
                 </CardContent>
             </Card>
