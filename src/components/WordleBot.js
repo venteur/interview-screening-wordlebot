@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, CircularProgress } from "@mui/material";
 import Button from "@mui/material/Button";
 import { fetchWordleResult } from "../api/api";
 import Palette from "./Palette";
@@ -12,12 +12,14 @@ const WordleBot = () => {
     const [clueCode, setClueCode] = useState("");
     const [apiResult, setApiResult] = useState({ guess: "SERAI" });
     const [cardData, setCardData] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     // const clueInputHandler = (event) => {
     //     setClueCode(event.target.value);
     // };
 
     const cardDataHandler = () => {
+        setLoading(true);
         console.log(clueCode, "hi");
         const request = [
             {
@@ -42,6 +44,9 @@ const WordleBot = () => {
             })
             .catch((error) => {
                 console.error(error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
@@ -99,7 +104,9 @@ const WordleBot = () => {
                 </CardContent>
             </Card>
 
-            <Button onClick={cardDataHandler}>Submit</Button>
+            <Button onClick={cardDataHandler} disabled={loading}>
+                {loading ? <CircularProgress size={24} /> : "Submit"}
+            </Button>
         </div>
     );
 };
