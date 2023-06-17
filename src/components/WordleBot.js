@@ -16,16 +16,14 @@ const WordleBot = () => {
         setClueCode(event.target.value);
     };
 
-
     const cardDataHandler = () => {
-      console.log(clueCode,"hi");
+        console.log(clueCode, "hi");
         const request = [
             {
                 word: guessWord,
                 clue: clueCode,
             },
         ];
-        
 
         fetchWordleResult(request)
             .then((response) => {
@@ -47,7 +45,10 @@ const WordleBot = () => {
     };
 
     const handlePaletteSelection = (code) => {
-      setClueCode(code);
+        const convertedValue = code
+            .map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x"))
+            .join("");
+        setClueCode(convertedValue);
     };
 
     // Sort cardData array based on chanceNumber
@@ -55,8 +56,6 @@ const WordleBot = () => {
 
     return (
         <div>
-            {/* Render initial card with default values */}
-
             {/* Render additional cards for API responses */}
             {sortedCardData.map((card, index) => (
                 <Card key={index}>
@@ -75,6 +74,7 @@ const WordleBot = () => {
                     </CardContent>
                 </Card>
             ))}
+            {/* Render initial card with default values */}
             <Card>
                 <CardContent>
                     <Typography variant="h4" gutterBottom>
@@ -98,5 +98,3 @@ const WordleBot = () => {
 };
 
 export default WordleBot;
-
-

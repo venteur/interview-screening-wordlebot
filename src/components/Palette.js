@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const Palette = ({onPaletteSelection}) => {
+const Palette = ({ onPaletteSelection }) => {
     const [selectedBoxes, setSelectedBoxes] = useState(Array(5).fill(null));
 
     const clickHandler = (rowIndex, colIndex) => {
@@ -8,9 +8,13 @@ const Palette = ({onPaletteSelection}) => {
         updatedBoxes[colIndex] = rowIndex;
         setSelectedBoxes(updatedBoxes);
 
-        const code = selectedBoxes.map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x")).join("");
-        onPaletteSelection(code);
+        // const code = selectedBoxes.map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x")).join("");
+        // onPaletteSelection(code);
     };
+
+    useEffect(() => {
+        onPaletteSelection(selectedBoxes);
+    }, [selectedBoxes, onPaletteSelection]);
 
     return (
         <div style={{ display: "flex", flexDirection: "column" }}>
