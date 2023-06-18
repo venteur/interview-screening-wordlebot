@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { Button, Typography, CircularProgress } from "@mui/material";
 import { fetchWordleResult } from "../api/api";
 import Palette from "./Palette";
@@ -14,11 +14,11 @@ const WordleBot = () => {
     const [error, setError] = useState(null);
     const [isWinner, setIsWinner] = useState(false);
 
-
     const cardDataHandler = () => {
         setLoading(true);
         console.log(clueCode, "hi");
-        console.log(apiResult.guess,"hello");
+        console.log(apiResult.guess, "hello");
+
         if (clueCode === "ggggg") {
             setLoading(false);
             setIsWinner(true);
@@ -35,14 +35,6 @@ const WordleBot = () => {
         fetchWordleResult(request)
             .then((response) => {
                 setApiResult(response);
-                setCardData((prevData) => [
-                    ...prevData,
-                    {
-                        guess: apiResult.guess.toLocaleUpperCase(),
-                        clue: clueCode,
-                        chanceNumber: currentChance,
-                    },
-                ]);
                 setClueCode("");
                 setCurrentChance((prevData) => prevData + 1);
             })
@@ -52,8 +44,19 @@ const WordleBot = () => {
             })
             .finally(() => {
                 setLoading(false);
-                console.log(cardData,"card Data");
+                console.log(cardData, "card Data");
             });
+    };
+
+    const updateData = () => {
+        setCardData((prevData) => [
+            ...prevData,
+            {
+                guess: apiResult.guess.toLocaleUpperCase(),
+                clue: clueCode,
+                chanceNumber: currentChance,
+            },
+        ]);
     };
 
     const handlePaletteSelection = (code) => {
@@ -89,32 +92,41 @@ const WordleBot = () => {
             ))}
 
             {/* Render initial card with default values */}
-            {(!isWinner && currentChance<6 ) && (
+            {!isWinner && currentChance < 6 && (
                 <div>
-                    <CardDisplay
-                        key="current-card"
-                        chance={currentChance}
-                        guess={apiResult.guess.toLocaleUpperCase()}
-                        colorCode={clueCode}
-                    />
+                    {!loading && (
+                        <CardDisplay
+                            key="current-card"
+                            chance={currentChance}
+                            guess={apiResult.guess.toLocaleUpperCase()}
+                            colorCode={clueCode}
+                        />
+                    )}
                     <Palette onPaletteSelection={handlePaletteSelection} />
-                    {!error && (<div className="button-container">
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={cardDataHandler}
-                            disabled={loading}
-                        >
-                            {loading ? <CircularProgress size={24} /> : "Submit"}
-                        </Button>
-                    </div>)}
+                    {!error && (
+                        <div className="button-container">
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                    cardDataHandler();
+                                    updateData();
+                                }}
+                                disabled={loading}
+                            >
+                                {loading ? <CircularProgress size={24} /> : "Submit"}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             )}
-            {(error || isWinner || currentChance === 6) && (<div className="button-container">
-                <Button variant="contained" color="secondary" onClick={handleReset}>
-                    Reset
-                </Button>
-            </div>)}
+            {(error || isWinner || currentChance === 6) && (
+                <div className="button-container">
+                    <Button variant="contained" color="secondary" onClick={handleReset}>
+                        Reset
+                    </Button>
+                </div>
+            )}
             {isWinner && (
                 <Typography variant="h5" gutterBottom>
                     Yay! All Done
