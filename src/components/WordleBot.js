@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Card, CardContent, Typography, CircularProgress } from "@mui/material";
-import Button from "@mui/material/Button";
 import { fetchWordleResult } from "../api/api";
+import Button from "@mui/material/Button";
 import Palette from "./Palette";
 import BoxDisplay from "./BoxDisplay";
+import CardDisplay from "./CardDisplay";
 import "./WordleBot.css";
 
 const WordleBot = () => {
@@ -13,6 +14,7 @@ const WordleBot = () => {
     const [apiResult, setApiResult] = useState({ guess: "SERAI" });
     const [cardData, setCardData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     // const clueInputHandler = (event) => {
     //     setClueCode(event.target.value);
@@ -21,6 +23,7 @@ const WordleBot = () => {
     const cardDataHandler = () => {
         setLoading(true);
         console.log(clueCode, "hi");
+        setError(null);
         const request = [
             {
                 word: guessWord,
@@ -44,6 +47,7 @@ const WordleBot = () => {
             })
             .catch((error) => {
                 console.error(error);
+                setError(error.message);
             })
             .finally(() => {
                 setLoading(false);
@@ -64,49 +68,40 @@ const WordleBot = () => {
         <div>
             {/* Render additional cards for API responses */}
             {sortedCardData.map((card, index) => (
-                <Card key={index}>
-                    <CardContent>
-                        <Typography variant="h4" gutterBottom>
-                            Guess #{card.chanceNumber + 1}
-                        </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            Word to Guess:
-                            <BoxDisplay word={card.guess} />
-                        </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            What response did you get back?
-                        </Typography>
-                        {/* <input type="text" value={card.clue} readOnly /> */}
-                        <BoxDisplay backgroundColor={card.clue} word={card.guess} />
-                    </CardContent>
-                </Card>
+                <CardDisplay
+                    key={`card-${index}`}
+                    chance={card.chanceNumber}
+                    guess={card.guess}
+                    colorCode={card.clue}
+                />
             ))}
-            {/* Render initial card with default values */}
-            <Card>
-                <CardContent>
-                    <Typography variant="h4" gutterBottom>
-                        Guess #{currentChance + 1}
-                    </Typography>
-                    <Typography variant="h6" gutterBottom>
-                        Word to Guess:
-                        {/* <input type="text" value={apiResult.guess.toLocaleUpperCase()} readOnly /> */}
-                        <BoxDisplay word={apiResult.guess.toLocaleUpperCase()} />
-                    </Typography>
-                    <Typography variant="h6" gutterBottom>
-                        What response did you get back?
-                    </Typography>
-                    {/* <input type="text" value={clueCode} onChange={clueInputHandler} /> */}
-                    <BoxDisplay
-                        backgroundColor={clueCode}
-                        word={apiResult.guess.toLocaleUpperCase()}
-                    />
-                    <Palette onPaletteSelection={handlePaletteSelection} />
-                </CardContent>
-            </Card>
 
-            <Button onClick={cardDataHandler} disabled={loading}>
-                {loading ? <CircularProgress size={24} /> : "Submit"}
-            </Button>
+            {/* Render initial card with default values */}
+            <CardDisplay
+                key="current-card"
+                chance={currentChance}
+                guess={apiResult.guess.toLocaleUpperCase()}
+                colorCode={clueCode}
+            />
+            <Palette onPaletteSelection={handlePaletteSelection} />
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    margin: "10px",
+                }}
+            >
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={cardDataHandler}
+                    disabled={loading}
+                >
+                    {loading ? <CircularProgress size={24} /> : "Submit"}
+                </Button>
+            </div>
+
+            {error && <p style={{ color: "red" }}>Error: {error}</p>}
         </div>
     );
 };

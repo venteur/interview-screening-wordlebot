@@ -14,7 +14,7 @@ const Palette = ({ onPaletteSelection }) => {
     }, [selectedBoxes, onPaletteSelection]);
 
     return (
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems:"center", marginBottom: "10px",}}>
             {[0, 1, 2].map((rowIndex) => (
                 <div key={rowIndex} style={{ display: "flex" }}>
                     {[0, 1, 2, 3, 4].map((colIndex) => (
@@ -27,8 +27,7 @@ const Palette = ({ onPaletteSelection }) => {
                                 textAlign: "center",
                                 fontSize: "18px",
                                 lineHeight: "40px",
-                                marginRight: "5px",
-                                marginBottom: "5px",
+                                margin:"5px",
                                 background:
                                     rowIndex === 0 ? "green" : rowIndex === 1 ? "yellow" : "white",
                                 opacity: selectedBoxes[colIndex] === rowIndex ? 1 : 0.5,

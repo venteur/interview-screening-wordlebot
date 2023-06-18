@@ -6,8 +6,10 @@ function BoxDisplay({ word, backgroundColor }) {
         width: "40px",
         height: "40px",
         border: "1px solid black",
-        marginRight: "5px",
-        marginBottom: "5px",
+        margin: "5px",
+        // marginLeft: "5px",
+        // marginRight: "5px",
+        // marginBottom: "5px",
         textAlign: "center",
         lineHeight: "40px",
         backgroundColor: "white", // Default background color is white
