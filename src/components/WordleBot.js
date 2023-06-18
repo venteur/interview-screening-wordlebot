@@ -1,32 +1,33 @@
-import React, { useState } from "react";
-import { Card, CardContent, Typography, CircularProgress } from "@mui/material";
+import React, { useState} from "react";
+import { Button, Typography, CircularProgress } from "@mui/material";
 import { fetchWordleResult } from "../api/api";
-import Button from "@mui/material/Button";
 import Palette from "./Palette";
-import BoxDisplay from "./BoxDisplay";
 import CardDisplay from "./CardDisplay";
 import "./WordleBot.css";
 
 const WordleBot = () => {
     const [currentChance, setCurrentChance] = useState(0);
-    const [guessWord, setGuessWord] = useState("SERAI");
     const [clueCode, setClueCode] = useState("");
     const [apiResult, setApiResult] = useState({ guess: "SERAI" });
     const [cardData, setCardData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isWinner, setIsWinner] = useState(false);
 
-    // const clueInputHandler = (event) => {
-    //     setClueCode(event.target.value);
-    // };
 
     const cardDataHandler = () => {
         setLoading(true);
         console.log(clueCode, "hi");
+        console.log(apiResult.guess,"hello");
+        if (clueCode === "ggggg") {
+            setLoading(false);
+            setIsWinner(true);
+            return;
+        }
         setError(null);
         const request = [
             {
-                word: guessWord,
+                word: apiResult.guess,
                 clue: clueCode,
             },
         ];
@@ -51,6 +52,7 @@ const WordleBot = () => {
             })
             .finally(() => {
                 setLoading(false);
+                console.log(cardData,"card Data");
             });
     };
 
@@ -59,6 +61,16 @@ const WordleBot = () => {
             .map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x"))
             .join("");
         setClueCode(convertedValue);
+    };
+
+    const handleReset = () => {
+        setCurrentChance(0);
+        setClueCode("");
+        setApiResult({ guess: "SERAI" });
+        setCardData([]);
+        setLoading(false);
+        setError(null);
+        setIsWinner(false);
     };
 
     // Sort cardData array based on chanceNumber
@@ -77,29 +89,42 @@ const WordleBot = () => {
             ))}
 
             {/* Render initial card with default values */}
-            <CardDisplay
-                key="current-card"
-                chance={currentChance}
-                guess={apiResult.guess.toLocaleUpperCase()}
-                colorCode={clueCode}
-            />
-            <Palette onPaletteSelection={handlePaletteSelection} />
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    margin: "10px",
-                }}
-            >
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={cardDataHandler}
-                    disabled={loading}
-                >
-                    {loading ? <CircularProgress size={24} /> : "Submit"}
+            {(!isWinner && currentChance<6 ) && (
+                <div>
+                    <CardDisplay
+                        key="current-card"
+                        chance={currentChance}
+                        guess={apiResult.guess.toLocaleUpperCase()}
+                        colorCode={clueCode}
+                    />
+                    <Palette onPaletteSelection={handlePaletteSelection} />
+                    {!error && (<div className="button-container">
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={cardDataHandler}
+                            disabled={loading}
+                        >
+                            {loading ? <CircularProgress size={24} /> : "Submit"}
+                        </Button>
+                    </div>)}
+                </div>
+            )}
+            {(error || isWinner || currentChance === 6) && (<div className="button-container">
+                <Button variant="contained" color="secondary" onClick={handleReset}>
+                    Reset
                 </Button>
-            </div>
+            </div>)}
+            {isWinner && (
+                <Typography variant="h5" gutterBottom>
+                    Yay! All Done
+                </Typography>
+            )}
+            {currentChance === 6 && (
+                <Typography variant="h5" gutterBottom>
+                    Sorry! Wanna try again ?
+                </Typography>
+            )}
 
             {error && <p style={{ color: "red" }}>Error: {error}</p>}
         </div>
