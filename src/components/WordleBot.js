@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Typography, CircularProgress } from "@mui/material";
 import { fetchWordleResult } from "../api/api";
 import Palette from "./Palette";
@@ -6,22 +6,23 @@ import CardDisplay from "./CardDisplay";
 import "./WordleBot.css";
 
 const WordleBot = () => {
-    const [currentChance, setCurrentChance] = useState(0);
-    const [clueCode, setClueCode] = useState("");
-    const [apiResult, setApiResult] = useState({ guess: "SERAI" });
-    const [cardData, setCardData] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [isWinner, setIsWinner] = useState(false);
+    // State Variables
+    const [currentChance, setCurrentChance] = useState(0); // Current chance number
+    const [clueCode, setClueCode] = useState(""); // Clue code input
+    const [apiResult, setApiResult] = useState({ guess: "SERAI" }); // API result for current guess
+    const [cardData, setCardData] = useState([]); // Array of objects containing card data for previous guesses
+    const [loading, setLoading] = useState(false); // Loading state for API request
+    const [error, setError] = useState(null); // Error state for API request
+    const [isWinner, setIsWinner] = useState(false); // Winner state when the clue code matches
 
+    // Handler Fetching guess, Handling errors, Setting winner
     const cardDataHandler = () => {
         setLoading(true);
-        console.log(clueCode, "hi");
-        console.log(apiResult.guess, "hello");
 
         if (clueCode === "ggggg") {
             setLoading(false);
             setIsWinner(true);
+            updateData();
             return;
         }
         setError(null);
@@ -39,15 +40,16 @@ const WordleBot = () => {
                 setCurrentChance((prevData) => prevData + 1);
             })
             .catch((error) => {
-                console.error(error);
                 setError(error.message);
             })
             .finally(() => {
                 setLoading(false);
                 console.log(cardData, "card Data");
+                updateData();
             });
     };
 
+    // Update card data array with the latest guess
     const updateData = () => {
         setCardData((prevData) => [
             ...prevData,
@@ -59,6 +61,7 @@ const WordleBot = () => {
         ]);
     };
 
+    //Handle palette color selection
     const handlePaletteSelection = (code) => {
         const convertedValue = code
             .map((box) => (box === 0 ? "g" : box === 1 ? "y" : "x"))
@@ -66,6 +69,7 @@ const WordleBot = () => {
         setClueCode(convertedValue);
     };
 
+    // Reset all states to initial values
     const handleReset = () => {
         setCurrentChance(0);
         setClueCode("");
@@ -79,39 +83,42 @@ const WordleBot = () => {
     // Sort cardData array based on chanceNumber
     const sortedCardData = cardData.sort((a, b) => a.chanceNumber - b.chanceNumber);
 
+    useEffect(() => {
+        setClueCode("");
+    }, [apiResult]);
+
     return (
         <div>
             {/* Render additional cards for API responses */}
             {sortedCardData.map((card, index) => (
-                <CardDisplay
-                    key={`card-${index}`}
-                    chance={card.chanceNumber}
-                    guess={card.guess}
-                    colorCode={card.clue}
-                />
+                <div key={index}>
+                    <CardDisplay
+                        key={`card-${index}`}
+                        chance={card.chanceNumber}
+                        guess={card.guess}
+                        colorCode={card.clue}
+                    />
+                    <div className="card-display"></div>
+                </div>
             ))}
 
             {/* Render initial card with default values */}
-            {!isWinner && currentChance < 6 && (
+            {!isWinner && currentChance < 6 && !error && (
                 <div>
-                    {!loading && (
-                        <CardDisplay
-                            key="current-card"
-                            chance={currentChance}
-                            guess={apiResult.guess.toLocaleUpperCase()}
-                            colorCode={clueCode}
-                        />
-                    )}
-                    <Palette onPaletteSelection={handlePaletteSelection} />
+                    <CardDisplay
+                        key="current-card"
+                        chance={currentChance}
+                        guess={apiResult.guess.toLocaleUpperCase()}
+                        colorCode={clueCode}
+                    />
+
+                    <Palette isLoading={loading} onPaletteSelection={handlePaletteSelection} />
                     {!error && (
                         <div className="button-container">
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={() => {
-                                    cardDataHandler();
-                                    updateData();
-                                }}
+                                onClick={cardDataHandler}
                                 disabled={loading}
                             >
                                 {loading ? <CircularProgress size={24} /> : "Submit"}
@@ -120,6 +127,8 @@ const WordleBot = () => {
                     )}
                 </div>
             )}
+
+            {/* Render reset button when there is an error, winner, or reached maximum chances */}
             {(error || isWinner || currentChance === 6) && (
                 <div className="button-container">
                     <Button variant="contained" color="secondary" onClick={handleReset}>
@@ -127,17 +136,22 @@ const WordleBot = () => {
                     </Button>
                 </div>
             )}
+
+            {/* Render winner message */}
             {isWinner && (
                 <Typography variant="h5" gutterBottom>
                     Yay! All Done
                 </Typography>
             )}
+
+            {/* Render maximum chances reached message */}
             {currentChance === 6 && (
                 <Typography variant="h5" gutterBottom>
                     Sorry! Wanna try again ?
                 </Typography>
             )}
 
+            {/* Render error message */}
             {error && <p style={{ color: "red" }}>Error: {error}</p>}
         </div>
     );

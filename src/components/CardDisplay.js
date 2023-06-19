@@ -1,10 +1,10 @@
 import React from "react";
 import BoxDisplay from "./BoxDisplay";
-import { Button, Card, CardContent, Typography, CircularProgress } from "@mui/material";
+import { Card, CardContent, Typography} from "@mui/material";
 
 const CardDisplay = ({ chance, guess, colorCode}) => {
     return (
-        <Card style={{border: "none", boxShadow:"none"}}>
+        <Card style={{borderbox: "none", boxShadow:"none"}}>
             <CardContent>
                 <Typography variant="h4" gutterBottom>
                     Guess #{chance+1}
