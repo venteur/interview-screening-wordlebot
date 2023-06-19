@@ -19,6 +19,7 @@ const WordleBot = () => {
     const [loading, setLoading] = useState(false); // Loading state for API request
     const [error, setError] = useState(null); // Error state for API request
     const [isWinner, setIsWinner] = useState(false); // Winner state when the clue code matches
+    const [initialLoader, setInitialLoader] = useState(true); // Initial Loading state for simulating rendering time
 
     // Handler for fetching guess, handling errors and setting winner
     const cardDataHandler = () => {
@@ -84,77 +85,93 @@ const WordleBot = () => {
         setIsWinner(false);
     };
 
-
     useEffect(() => {
         setClueCode("");
     }, [apiResult]);
 
+    useEffect(() => {
+        setTimeout(() => {
+            setInitialLoader(false);
+        }, 3000);
+    }, []);
+
     return (
         <div>
-            {/* Render cards for previous user interaction data */}
-            {cardData?.map((card, index) => (
-                <div key={index}>
-                    <CardDisplay
-                        key={`card-${index}`}
-                        chance={card.chanceNumber}
-                        guess={card.guess}
-                        colorCode={card.clue}
-                    />
-                    <div className="card-display"></div>
+            {initialLoader ? (
+                <div className="initial-loader">
+                    <CircularProgress />
                 </div>
-            ))}
-
-            {/* Render initial card with default values */}
-            {!isWinner && currentChance < 6 && !error && (
+            ) : (
                 <div>
-                    <CardDisplay
-                        key="current-card"
-                        chance={currentChance}
-                        guess={apiResult.guess.toLocaleUpperCase()}
-                        colorCode={clueCode}
-                    />
+                    {/* Render cards for previous user interaction data */}
+                    {cardData?.map((card, index) => (
+                        <div key={index}>
+                            <CardDisplay
+                                key={`card-${index}`}
+                                chance={card.chanceNumber}
+                                guess={card.guess}
+                                colorCode={card.clue}
+                            />
+                            <div className="card-display"></div>
+                        </div>
+                    ))}
 
-                    <Palette isLoading={loading} onPaletteSelection={handlePaletteSelection} />
-                    {!error && (
+                    {/* Render initial card with default values */}
+                    {!isWinner && currentChance < 6 && !error && (
+                        <div>
+                            <CardDisplay
+                                key="current-card"
+                                chance={currentChance}
+                                guess={apiResult.guess.toLocaleUpperCase()}
+                                colorCode={clueCode}
+                            />
+
+                            <Palette
+                                isLoading={loading}
+                                onPaletteSelection={handlePaletteSelection}
+                            />
+                            {!error && (
+                                <div className="button-container">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={cardDataHandler}
+                                        disabled={loading}
+                                    >
+                                        {loading ? <CircularProgress size={24} /> : "Submit"}
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Render reset button when there is an error, winner, or reached maximum chances */}
+                    {(error || isWinner || currentChance === 6) && (
                         <div className="button-container">
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={cardDataHandler}
-                                disabled={loading}
-                            >
-                                {loading ? <CircularProgress size={24} /> : "Submit"}
+                            <Button variant="contained" color="secondary" onClick={handleReset}>
+                                Reset
                             </Button>
                         </div>
                     )}
+
+                    {/* Render winner message */}
+                    {isWinner && (
+                        <Typography variant="h5" gutterBottom>
+                            Yay! All Done
+                        </Typography>
+                    )}
+
+                    {/* Render maximum chances reached message */}
+                    {currentChance === 6 && (
+                        <Typography variant="h5" gutterBottom>
+                            Sorry! Wanna try again ?
+                        </Typography>
+                    )}
+
+                    {/* Render error message */}
+                    {error && <p style={{ color: "red" }}>Error: {error}</p>}
                 </div>
             )}
-
-            {/* Render reset button when there is an error, winner, or reached maximum chances */}
-            {(error || isWinner || currentChance === 6) && (
-                <div className="button-container">
-                    <Button variant="contained" color="secondary" onClick={handleReset}>
-                        Reset
-                    </Button>
-                </div>
-            )}
-
-            {/* Render winner message */}
-            {isWinner && (
-                <Typography variant="h5" gutterBottom>
-                    Yay! All Done
-                </Typography>
-            )}
-
-            {/* Render maximum chances reached message */}
-            {currentChance === 6 && (
-                <Typography variant="h5" gutterBottom>
-                    Sorry! Wanna try again ?
-                </Typography>
-            )}
-
-            {/* Render error message */}
-            {error && <p style={{ color: "red" }}>Error: {error}</p>}
         </div>
     );
 };
