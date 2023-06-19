@@ -1,7 +1,20 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Palette component represents a color palette with selectable boxes.
+ *
+ * Props:
+ * - isLoading: Indicates if the palette is in a loading state.
+ * - onPaletteSelection: Callback function triggered when a box is selected.
+ */
+
 const Palette = ({ isLoading, onPaletteSelection }) => {
     const [selectedBoxes, setSelectedBoxes] = useState(Array(5).fill(null));
+
+    /**
+     * Handles the click event on a box.
+     * Updates the selected boxes if not in a loading state.
+     */
 
     const clickHandler = (rowIndex, colIndex) => {
         if (!isLoading) {
@@ -11,10 +24,12 @@ const Palette = ({ isLoading, onPaletteSelection }) => {
         }
     };
 
+    // Trigger the onPaletteSelection callback when selectedBoxes changes.
     useEffect(() => {
         onPaletteSelection(selectedBoxes);
     }, [selectedBoxes, onPaletteSelection]);
 
+    // Reset selectedBoxes when isLoading changes.
     useEffect(() => {
         if (!isLoading) {
             setSelectedBoxes(Array(5).fill(null));

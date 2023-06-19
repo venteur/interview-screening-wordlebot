@@ -5,6 +5,11 @@ import Palette from "./Palette";
 import CardDisplay from "./CardDisplay";
 import "./WordleBot.css";
 
+/**
+ * WordleBot component represents the main component for the Wordle helper game.
+ * It handles the game logic, API requests, and rendering of the game elements.
+ */
+
 const WordleBot = () => {
     // State Variables
     const [currentChance, setCurrentChance] = useState(0); // Current chance number
@@ -15,7 +20,7 @@ const WordleBot = () => {
     const [error, setError] = useState(null); // Error state for API request
     const [isWinner, setIsWinner] = useState(false); // Winner state when the clue code matches
 
-    // Handler Fetching guess, Handling errors, Setting winner
+    // Handler for fetching guess, handling errors and setting winner
     const cardDataHandler = () => {
         setLoading(true);
 
@@ -44,7 +49,6 @@ const WordleBot = () => {
             })
             .finally(() => {
                 setLoading(false);
-                console.log(cardData, "card Data");
                 updateData();
             });
     };
@@ -80,8 +84,6 @@ const WordleBot = () => {
         setIsWinner(false);
     };
 
-    // Sort cardData array based on chanceNumber
-    const sortedCardData = cardData.sort((a, b) => a.chanceNumber - b.chanceNumber);
 
     useEffect(() => {
         setClueCode("");
@@ -89,8 +91,8 @@ const WordleBot = () => {
 
     return (
         <div>
-            {/* Render additional cards for API responses */}
-            {sortedCardData.map((card, index) => (
+            {/* Render cards for previous user interaction data */}
+            {cardData?.map((card, index) => (
                 <div key={index}>
                     <CardDisplay
                         key={`card-${index}`}

@@ -2,6 +2,11 @@ import React from "react";
 import BoxDisplay from "./BoxDisplay";
 import { Card, CardContent, Typography} from "@mui/material";
 
+/**
+ * CardDisplay component represents the display of a single card in the WordleBot game.
+ * It shows the chance number, the word to guess, and the response received.
+ */
+
 const CardDisplay = ({ chance, guess, colorCode}) => {
     return (
         <Card style={{borderbox: "none", boxShadow:"none"}}>
